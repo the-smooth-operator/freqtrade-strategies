@@ -3,12 +3,14 @@ from freqtrade.strategy.interface import IStrategy
 from pandas import DataFrame
 import talib.abstract as ta
 import freqtrade.vendor.qtpylib.indicators as qtpylib
+from freqtrade.persistence import Trade
+from datetime import timedelta, datetime, timezone
 
 
 # --------------------------------
 
 
-class Bb(IStrategy):
+class BbStage(IStrategy):
     minimal_roi = {
         "0": 20
     }
