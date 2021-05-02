@@ -61,16 +61,32 @@ class Bb(IStrategy):
 
             ),
             'buy'] = 1
+
+        # Lock pairs based on their past performance
+        if self.config['runmode'].value in ('live', 'dry_run'):
+            # fetch closed trades for X period
+            trades = Trade.get_trades([Trade.pair == metadata['pair'],
+                Trade.open_date > datetime.utcnow() - timedelta(hours=4),
+                Trade.is_open.is_(False),
+                ]).all()
+        # Analyze the conditions you'd like to lock the pair
+        sumprofit = sum(trade.close_profit for trade in trades)
+        percentprofit = sumprofit / self.config['stake_amount']
+        if percentprofit > 0.10:
+            # Lock pair
+            self.lock_pair(metadata['pair'], until=datetime.now(timezone.utc) +
+                    timedelta(hours=4))
+
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (
+                (
                     (dataframe['rsi'] > 75) |
                     (dataframe['close'] < dataframe['bb_middleband'] * 0.97) &
                     (dataframe['open'] > dataframe['close'])  # red bar
 
-            ),
-            'sell'] = 1
+                    ),
+                'sell'] = 1
         return dataframe
 
