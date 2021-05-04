@@ -44,7 +44,7 @@ class Macd(IStrategy):
 
     # Optional order type mapping
     order_types = {
-        'buy': 'limit',
+        'buy': 'market',
         'sell': 'market',
         'stoploss': 'limit',
         'stoploss_on_exchange': True
