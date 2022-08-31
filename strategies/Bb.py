@@ -25,12 +25,12 @@ class Bb(IStrategy):
     ticker_interval = '1h'
 
     # Experimental settings (configuration will overide these if set)
-    use_sell_signal = True
-    ignore_roi_if_buy_signal = False
+    use_exit_signal = True
+    ignore_roi_if_entry_signal = False
 
     order_types = {
-        'buy': 'market',
-        'sell': 'market',
+        'entry': 'market',
+        'exit': 'market',
         'stoploss': 'limit',
         'stoploss_on_exchange': True
     }
@@ -50,7 +50,7 @@ class Bb(IStrategy):
 
         return dataframe
 
-    def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
                     (dataframe['close'] > dataframe['bb_middleband']) &
@@ -60,10 +60,10 @@ class Bb(IStrategy):
                     (dataframe['ema20'] > dataframe['ema200'])
 
             ),
-            'buy'] = 1
+            'enter_long'] = 1
         return dataframe
 
-    def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+    def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
                     (dataframe['rsi'] > 75) |
@@ -71,6 +71,5 @@ class Bb(IStrategy):
                     (dataframe['open'] > dataframe['close'])  # red bar
 
             ),
-            'sell'] = 1
+            'exit_long'] = 1
         return dataframe
-
